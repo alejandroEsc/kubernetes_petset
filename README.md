@@ -1,2 +1,4 @@
 # kubernetes_petset
-test
+###This is to deploy cassandra, scylla cluster on GCE, AWS using kubernetes petset.
+
+
