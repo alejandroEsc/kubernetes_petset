@@ -16,7 +16,7 @@ You can customize this file
 
 #####b) to create cassandra petset cluster
 
-	$ kubectl create -f yaml/cassandra-petset-local.yaml
+	$ kubectl create -f yaml/cassandra/cassandra-petset-local.yaml
 
 #####c) to check cassandra cluster status
 
