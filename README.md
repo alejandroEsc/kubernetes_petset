@@ -8,8 +8,8 @@ To create cassandra petset clusters
 ###1) Not Using PV
  When you delete your pods, the volumes also remove
 
-#####a) to edit cassandra-petset.yaml
-* you can edit yaml file 
+#####a) to edit cassandra-petset_local.yaml  
+You can customize this file
 	
 <https://github.com/jooyeong/kubernetes_petset/blob/master/yaml/cassandra/cassandra-petset-local.yaml>
 
@@ -47,7 +47,7 @@ Most steps are same with "Not using PV" steps.
 but you should refer to this file for Using PV  
 <https://github.com/jooyeong/kubernetes_petset/blob/master/yaml/cassandra/cassandra-petset-pv.yaml>
 
-	$ kubectl create -f yaml/cassandra-petset-pv.yaml
+	$ kubectl create -f yaml/cassandra/cassandra-petset-pv.yaml
 
 In this case, the volume create automatically.(Dynamic volume)  
 But you cannot choose the volume type and filesystem. (volume default : standard persistent volume(gce), gp2(aws))
@@ -63,14 +63,13 @@ Also you can find your volume on your GCE disks
 
 ####2-2) Using SSD persistent disk as PV
 
-As I said before, when you use the persistent volume, you cannot choose the volume type, filesystem.  
+As I said before, when you use the persistent volume, you cannot choose the volume type.  
 There is a way to modify volume type  
 You should refer this link.(https://github.com/kubernetes/kubernetes/issues/23525)  
 
 After do this, you can just create petset cluster.  
 Even though modifying the code , you cannot choose the volume type.  
 It is just updated default volume type. 
-
 
 Otherwise when you want to use SSD persistent disks as PV, you should create SSD disks in advance.  
 (Cassandra recommend to use SSD)
@@ -83,6 +82,8 @@ Also, Don't forget that there is naming rule when you create PVC(persistent volu
 	$ ./create_volume.sh
 	$ ./create_volume.sh gce 3 50 pd-ssd us-central1-b ext4 test
 	$ ./create_volume.sh aws 3 50 gp2 us-west-2a ext4
+	$ cd yaml 
+	$ cat pv_result_$date.yaml
 
 
 Generally pvc_nm is volumeClaimTemplates's name and cluster name 
@@ -94,14 +95,13 @@ Generally pvc_nm is volumeClaimTemplates's name and cluster name
 
 After checking the yaml file, you can create PV, PVC.
 
-
-	$ kubectl create -f yaml/pv_result.yaml
-	$ kubectl create -f yaml/pvc_result.yaml
+	$ kubectl create -f yaml/pv_result_$date.yaml
+	$ kubectl create -f yaml/pvc_result_$date.yaml
 
 	
 Then, you can create petset cluster.
 
-	$ kubectl create -f yaml/cassandra-petset-pv.yaml
+	$ kubectl create -f yaml/cassandra/cassandra-petset-pv.yaml
 	
 	
 In this case, When you delete petset cluster, the PV, PVC remains.  
@@ -126,11 +126,11 @@ It has almost same steps with cassandra.
 <https://github.com/jooyeong/kubernetes_petset/blob/master/yaml/scylla/scylla-petset-local.yaml>
 
 
-#####b) to create cassandra petset cluster
+#####b) to create scylla petset cluster
 
-	$ kubectl create -f yaml/scylla-petset-local.yaml
+	$ kubectl create -f yaml/scylla/scylla-petset-local.yaml
 
-#####c) to check cassandra cluster status
+#####c) to check scylla cluster status
 
 	$ kubectl exec -it scylla-0 nodetool status
 
@@ -139,7 +139,7 @@ It has almost same steps with cassandra.
 	$ kubectl delete service scylla
 	$ kubectl delete pod scylla-0
 
-#####e) to scale out cassandra petset cluster
+#####e) to scale out scylla petset cluster
 	$ kubectl edit petset scylla
 
 Then you can edit replicas count on petset yaml.  
@@ -155,7 +155,7 @@ Most steps are same with "Not using PV" steps.
 but you should refer to this file for Using PV  
 <https://github.com/jooyeong/kubernetes_petset/blob/master/yaml/scylla/scylla-petset-pv.yaml>
 
-	$ kubectl create -f yaml/scylla-petset-pv.yaml
+	$ kubectl create -f yaml/scylla/scylla-petset-pv.yaml
 
 In this case, the volume create automatically.(Dynamic volume)  
 But you cannot choose the volume type and filesystem. (volume default : standard persistent volume(gce), gp2(aws))
@@ -173,9 +173,10 @@ Also you can find your volume on your GCE disks
 
 Scylla recommend to use SSD and xfs filesystem. 
 
-As I said before, you cannot choose the volume type and filesystem.  
+As I said before, you cannot choose the volume type as well as filesystem.  
 So when you want to use SSD persistent disks and xfs filesystem as PV, you should create disks in advance.    
-Also, AWS support xfs filesystem by default but GCE doesn't do that.  
+
+** Also, AWS support xfs filesystem by default but GCE doesn't do that.  
 Therefore when you deploy the scylla cluster on GCE, you should install xfsprogs on GCE nodes.  
 
 	Syntax> ./xfs_install.sh zone instance_group_name   
@@ -195,18 +196,18 @@ Generally pvc_nm is volumeClaimTemplates's name and cluster name
 
 	Syntax> ./pvc_generator.sh pvc_nm vol_count vol_size "
 	$ ./pvc_generator.sh
-	$ ./pvc_generator.sh cassandra-data-cassandra 3 50"
+	$ ./pvc_generator.sh scylla-data-scylla 3 50"
 
 
 After checking the yaml file, you can create PV, PVC.
 
-	$ kubectl create -f yaml/pv_result.yaml
-	$ kubectl create -f yaml/pvc_result.yaml
+	$ kubectl create -f yaml/pv_result_$date.yaml
+	$ kubectl create -f yaml/pvc_result_$date.yaml
 
 	
 Then, you can create petset cluster.
 
-	$ kubectl create -f yaml/scylla-petset-pv.yaml
+	$ kubectl create -f yaml/scylla/scylla-petset-pv.yaml
 	
 In this case, When you delete petset cluster, the PV, PVC remains.  
 So if you want to delete all about the petset cluster and volume, you should delete PV and PVC.
