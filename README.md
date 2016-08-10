@@ -176,11 +176,12 @@ Scylla recommend to use SSD and xfs filesystem.
 As I said before, you cannot choose the volume type as well as filesystem.  
 So when you want to use SSD persistent disks and xfs filesystem as PV, you should create disks in advance.    
 
-** Also, AWS support xfs filesystem by default but GCE doesn't do that.  
-Therefore when you deploy the scylla cluster on GCE, you should install xfsprogs on GCE nodes.  
+** Also, you should install xfsprogs on kubernetes nodes for using xfs filesystem.  
 
-	Syntax> ./xfs_install.sh zone instance_group_name   
-	$ ./xfs_install.sh asia-east1-c  gke-cassandra-test01-default-pool-56c12390d-grp  
+	Syntax> ./xfs_install.sh cloud_type zone(gce only) instance_group_name(gce only)
+	$ ./xfs_install.sh
+	$ ./xfs_install.sh gce asia-east1-c  gke-cassandra-test01-default-pool-56c12390d-grp
+	$ ./xfs_install.sh aws
 
 And then you can create volume and generate persistent volume yaml using create_volume.sh      
 This shell is not completed. You should check the result files  
